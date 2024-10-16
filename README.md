@@ -21,5 +21,3 @@ Here are the steps to build application:
    terraform init
    terraform plan
    terraform apply
-
-gcloud artifacts repositories create python-apps --repository-format=docker --location=europe-west3 --description="Docker repository for Python REST app"
