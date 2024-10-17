@@ -3,6 +3,10 @@ provider "google" {
   region  = var.default_region
 }
 
+resource "google_compute_global_address" "ip" {
+  name = "service-ip"
+}
+
 resource "google_compute_health_check" "default" {
   name               = "${var.service_name}-hc"
   check_interval_sec = 5
@@ -49,18 +53,18 @@ resource "google_compute_region_network_endpoint_group" "serverless_neg-ew4" {
 
 resource "google_compute_backend_service" "regional-backend-global" {
   name                  = "${var.service_name}-backend-global"
-  load_balancing_scheme = "EXTERNAL"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
   protocol              = "HTTP"
 
   backend {
     group = google_compute_region_network_endpoint_group.serverless_neg-ew3.id
-    balancing_mode  = "UTILIZATION"
-    capacity_scaler = 1.0
+#     balancing_mode  = "UTILIZATION"
+#     capacity_scaler = 1.0
   }
   backend {
     group = google_compute_region_network_endpoint_group.serverless_neg-ew4.id
-    balancing_mode  = "UTILIZATION"
-    capacity_scaler = 0.0
+#     balancing_mode  = "UTILIZATION"
+#     capacity_scaler = 0.0
   }
 }
 
