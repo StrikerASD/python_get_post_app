@@ -3,6 +3,10 @@ provider "google" {
   region  = var.default_region
 }
 
+resource "google_compute_global_address" "ip" {
+  name = "service-ip"
+}
+
 resource "google_compute_health_check" "default" {
   name               = "${var.service_name}-hc"
   check_interval_sec = 5
