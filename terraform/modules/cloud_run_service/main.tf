@@ -3,6 +3,13 @@ resource "google_cloud_run_service" "default" {
   location = var.region
 
   template {
+    metadata {
+      annotations = {
+        "autoscaling.knative.dev/minScale": "1"
+        "autoscaling.knative.dev/maxScale": "1"
+        "run.googleapis.com/cpu-throttling": "false"
+      }
+    }
     spec {
       containers {
         image = var.image

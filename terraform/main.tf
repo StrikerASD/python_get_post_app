@@ -54,9 +54,13 @@ resource "google_compute_backend_service" "regional-backend-global" {
 
   backend {
     group = google_compute_region_network_endpoint_group.serverless_neg-ew3.id
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 1.0
   }
   backend {
     group = google_compute_region_network_endpoint_group.serverless_neg-ew4.id
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 0.0
   }
 }
 
