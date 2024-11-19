@@ -1,5 +1,5 @@
-project_id = "sb-izal-20241015-081301"
+project_id = "sb-izal-20241111-105308"
 repo_name  = "python-apps"
-container_image = "europe-west3-docker.pkg.dev/sb-izal-20241015-081301/python-apps/rest-app:latest"
+container_image = "europe-west3-docker.pkg.dev/${var.project_id}/python-apps/rest-app:latest"
 service_name = "python-rest-app"
-image_name = "europe-west3-docker.pkg.dev/sb-izal-20241015-081301/python-apps/rest-app:latest"
+image_name = "europe-west3-docker.pkg.dev/${var.project_id}/python-apps/rest-app:latest"

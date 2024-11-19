@@ -3,10 +3,6 @@ provider "google" {
   region  = var.default_region
 }
 
-resource "google_compute_global_address" "ip" {
-  name = "service-ip"
-}
-
 resource "google_compute_health_check" "default" {
   name               = "${var.service_name}-hc"
   check_interval_sec = 5
@@ -29,48 +25,33 @@ module "cloud_run_services" {
   image  = var.container_image
 }
 
-resource "google_compute_region_network_endpoint_group" "serverless_neg-ew3" {
-  name                  = "europe-west3-neg"
+resource "google_compute_region_network_endpoint_group" "serverless_neg" {
+  for_each = module.cloud_run_services
+
+  name                  = "${var.service_name}-neg-${each.key}"
   network_endpoint_type = "SERVERLESS"
   region = "europe-west3"
-  depends_on = [module.cloud_run_services]
 
   cloud_run {
-    service = module.cloud_run_services["europe-west3"].service_name
+    service = each.value.service_name
   }
 }
 
-resource "google_compute_region_network_endpoint_group" "serverless_neg-ew4" {
-  name                  = "europe-west4-neg"
-  network_endpoint_type = "SERVERLESS"
-  region = "europe-west4"
-  depends_on = [module.cloud_run_services]
-
-  cloud_run {
-    service = module.cloud_run_services["europe-west4"].service_name
-  }
-}
-
-resource "google_compute_backend_service" "regional-backend-global" {
-  name                  = "${var.service_name}-backend-global"
-  load_balancing_scheme = "EXTERNAL_MANAGED"
+resource "google_compute_backend_service" "regional_backend" {
+  for_each             = toset(var.regions)
+  name                  = "${var.service_name}-backend-${each.key}"
+  load_balancing_scheme = "EXTERNAL"
   protocol              = "HTTP"
 
   backend {
-    group = google_compute_region_network_endpoint_group.serverless_neg-ew3.id
-#     balancing_mode  = "UTILIZATION"
-#     capacity_scaler = 1.0
-  }
-  backend {
-    group = google_compute_region_network_endpoint_group.serverless_neg-ew4.id
-#     balancing_mode  = "UTILIZATION"
-#     capacity_scaler = 0.0
+    group = google_compute_region_network_endpoint_group.serverless_neg[each.key].id
+    # Removed health_checks line since Serverless NEGs do not require them
   }
 }
 
 resource "google_compute_url_map" "default" {
   name            = "${var.service_name}-url-map"
-  default_service = google_compute_backend_service.regional-backend-global.self_link
+  default_service = google_compute_backend_service.regional_backend["europe-west3"].self_link
 }
 
 resource "google_compute_target_http_proxy" "default" {
