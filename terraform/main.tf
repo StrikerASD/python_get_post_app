@@ -4,10 +4,10 @@ provider "google" {
 }
 
 resource "google_compute_health_check" "default" {
-  name               = "${var.service_name}-hc"
-  check_interval_sec = 5
-  timeout_sec        = 5
-  healthy_threshold  = 2
+  name                = "${var.service_name}-hc"
+  check_interval_sec  = 5
+  timeout_sec         = 5
+  healthy_threshold   = 2
   unhealthy_threshold = 2
 
   http_health_check {
@@ -30,7 +30,7 @@ resource "google_compute_region_network_endpoint_group" "serverless_neg" {
 
   name                  = "${var.service_name}-neg-${each.key}"
   network_endpoint_type = "SERVERLESS"
-  region = "europe-west3"
+  region                = "europe-west3"
 
   cloud_run {
     service = each.value.service_name
@@ -38,7 +38,7 @@ resource "google_compute_region_network_endpoint_group" "serverless_neg" {
 }
 
 resource "google_compute_backend_service" "regional_backend" {
-  for_each             = toset(var.regions)
+  for_each              = toset(var.regions)
   name                  = "${var.service_name}-backend-${each.key}"
   load_balancing_scheme = "EXTERNAL"
   protocol              = "HTTP"

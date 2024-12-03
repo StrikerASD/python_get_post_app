@@ -5,9 +5,9 @@ resource "google_cloud_run_service" "default" {
   template {
     metadata {
       annotations = {
-        "autoscaling.knative.dev/minScale": "1"
-        "autoscaling.knative.dev/maxScale": "1"
-        "run.googleapis.com/cpu-throttling": "false"
+        "autoscaling.knative.dev/minScale" : "1"
+        "autoscaling.knative.dev/maxScale" : "1"
+        "run.googleapis.com/cpu-throttling" : "false"
       }
     }
     spec {
